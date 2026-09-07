@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <!-- title / description は event.js が該当イベントの内容で上書きします -->
+  <title>イベント詳細｜とうじょう縁側</title>
+  <meta name="description" content="加東市・東条地域のイベント詳細ページです。">
+
+  <!-- OGP（SNSシェア用）。event.js が動的に書き換えます -->
+  <meta property="og:type" content="article">
+  <meta property="og:title" id="ogTitle" content="">
+  <meta property="og:description" id="ogDesc" content="">
+  <meta property="og:image" id="ogImage" content="">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&family=Shippori+Mincho:wght@600;700;800&family=Cormorant+Garamond:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <!-- canonical は event.js が ?id= 付きURLに書き換えます -->
+  <link rel="canonical" id="canonicalLink" href="https://event.tojormo.com/event.html" />
+</head>
+<body>
+  <!-- ==================== HEADER ====================
+       一覧ページ（index.html）と共通。ロゴをクリックで一覧へ戻ります。
+       ================================================================ -->
+  <header class="site-header" id="hdr">
+    <div class="wrap nav">
+      <a href="./" class="logo">
+        <span class="logo-text">
+          <span id="siteName"></span>
+          <small id="siteNameSub"></small>
+        </span>
+      </a>
+      <form class="search-form" id="searchForm" role="search" action="./" method="get">
+        <svg class="search-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <circle cx="11" cy="11" r="7" stroke="currentColor" stroke-width="2"/>
+          <path d="M21 21l-4.3-4.3" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+        </svg>
+        <input type="text" id="searchInput" class="search-input" autocomplete="off" inputmode="search">
+      </form>
+    </div>
+  </header>
+
+  <!-- ==================== DETAIL PAGE ====================
+       #detailRoot の中身を event.js が組み立てます。
+       ================================================================ -->
+  <main class="section detail-section">
+    <div class="wrap">
+      <!-- パンくず／戻る -->
+      <nav class="detail-breadcrumb" aria-label="パンくず">
+        <a href="./" class="back-link" id="backLink">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M15 18l-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          <span id="backLabel">イベント一覧へ戻る</span>
+        </a>
+      </nav>
+
+      <div id="statusMessage" class="status-message" hidden></div>
+
+      <article class="detail-article" id="detailRoot" hidden>
+        <div class="detail-media">
+          <div class="detail-thumb" id="detailThumb"></div>
+        </div>
+        <div class="detail-content">
+          <span class="detail-category" id="detailCategory"></span>
+          <h1 class="detail-title" id="detailTitle"></h1>
+          <p class="detail-address" id="detailAddress"></p>
+
+          <div class="detail-body" id="detailBody"></div>
+
+          <div class="detail-actions">
+            <a href="#" class="btn detail-link" id="detailLink" target="_blank" rel="noopener noreferrer" hidden></a>
+            <button type="button" class="btn detail-fav" id="detailFav"></button>
+            <button type="button" class="btn detail-share" id="detailShare">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M4 12v7a1 1 0 001 1h14a1 1 0 001-1v-7" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                <path d="M12 15V4M8 8l4-4 4 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span id="shareLabel">このページを共有</span>
+            </button>
+          </div>
+        </div>
+      </article>
+    </div>
+  </main>
+
+  <!-- ==================== FOOTER ==================== -->
+  <footer id="siteFooter"></footer>
+
+  <script src="config.js"></script>
+  <script src="event.js"></script>
+</body>
+</html>

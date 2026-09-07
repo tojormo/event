@@ -75,6 +75,14 @@
     return div.innerHTML;
   }
 
+  // ---- 個別イベント詳細ページのURLを組み立てる ----
+  // config.js の detailPagePath（既定 "event.html"）に ?id=<イベントID> を付与。
+  // 末尾がイベントIDになるので、そのURLを共有すれば直接その詳細を開けます。
+  function getDetailUrl(id) {
+    const base = cfg.detailPagePath || "event.html";
+    return base + "?id=" + encodeURIComponent(id);
+  }
+
   // ---- お気に入り（localStorage） ----
   function loadFavorites() {
     try {
@@ -289,8 +297,7 @@
     const card = document.createElement("article");
     card.className = "event-card";
     card.tabIndex = 0;
-    card.setAttribute("role", "button");
-    card.setAttribute("aria-haspopup", "dialog");
+    card.setAttribute("role", "link");
     card.setAttribute("aria-label", (event.title || "") + " の詳細を見る");
 
     // --- サムネイル（画像のみ。バッジ等はオーバーレイしない） ---
@@ -378,12 +385,22 @@
     card.appendChild(thumbWrap);
     card.appendChild(body);
 
-    // --- カード全体のクリック/キーボード操作で詳細モーダルを開く ---
-    card.addEventListener("click", () => openDetail(event, card));
+    // --- カード全体のクリック/キーボード操作で「独立した詳細ページ」へ遷移 ---
+    // URL例: event.html?id=evt2026001 （末尾がイベントIDになります）
+    const detailUrl = getDetailUrl(event.id);
+    card.dataset.href = detailUrl;
+    card.addEventListener("click", (e) => {
+      // Ctrl/⌘+クリックや中クリックは「新しいタブで開く」を尊重
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) {
+        window.open(detailUrl, "_blank", "noopener");
+        return;
+      }
+      window.location.href = detailUrl;
+    });
     card.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        openDetail(event, card);
+        window.location.href = detailUrl;
       }
     });
 
