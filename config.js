@@ -84,6 +84,16 @@ const SITE_CONFIG = {
   // ---- 詳細モーダル関連 ---------------------------------------------------
   detailFallbackText: "詳細情報は準備中です。", // detailが未設定の場合に表示する文言
   modalCloseLabel: "閉じる",             // モーダル閉じるボタンのaria-label
+
+  // ---- 個別イベント詳細ページ（event.html）関連 -----------------------------
+  // カードをクリックすると event.html?id=<イベントID> の独立ページへ遷移します。
+  detailPagePath: "event.html",          // 詳細ページのファイル名（?id= が自動付与されます）
+  backToListLabel: "イベント一覧へ戻る",   // 詳細ページ上部の「戻る」リンク文言
+  eventDateLabel: "開催日",               // 主要情報：開催日のラベル（一覧カード／詳細ページ共通の概念）
+  eventAddressLabel: "会場",              // 主要情報：会場（住所）のラベル
+  organizerLabel: "主催団体",             // 主要情報：主催団体のラベル
+  shareLabel: "このページを共有",          // 共有ボタンの文言
+  shareCopiedLabel: "URLをコピーしました", // 共有ボタン押下後（クリップボードコピー時）の文言
 };
 
 // main.js は window.SITE_CONFIG を参照します。

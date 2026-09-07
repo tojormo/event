@@ -83,6 +83,24 @@
     return base + "?id=" + encodeURIComponent(id);
   }
 
+  // ---- 開催日を取り出す ----
+  // 1) events.json に "date" 列があればそれを最優先で使用
+  // 2) 無ければ detail 内の「開催日：〇〇<br>」から自動抽出（現行データ形式に対応）
+  function getEventDate(event) {
+    if (event.date && String(event.date).trim()) return String(event.date).trim();
+    if (event.detail) {
+      const m = String(event.detail).match(/開催日[：:]([\s\S]*?)<br/i);
+      if (m && m[1]) {
+        // 抽出値に残ったHTMLタグ（</b> 等）を除去して整形
+        const tmp = document.createElement("div");
+        tmp.innerHTML = m[1];
+        const txt = (tmp.textContent || "").replace(/\s+/g, " ").trim();
+        if (txt) return txt;
+      }
+    }
+    return "";
+  }
+
   // ---- お気に入り（localStorage） ----
   function loadFavorites() {
     try {
@@ -130,7 +148,10 @@
       if (!res.ok) throw new Error("HTTP " + res.status);
       const json = await res.json();
       if (!Array.isArray(json)) throw new Error("JSON形式が不正です（配列である必要があります）");
-      allEvents = json;
+      // イベントIDの昇順で並べ替え（表示順を常にID順に固定）
+      allEvents = json.slice().sort((a, b) =>
+        String(a.id || "").localeCompare(String(b.id || ""), "en", { numeric: true })
+      );
       renderCategoryFilter();
       applyFilter(currentCategory, true);
     } catch (err) {
@@ -324,6 +345,17 @@
     title.textContent = event.title || "(タイトル未設定)";
     body.appendChild(title);
 
+    // 開催日（detailから自動抽出／date列があればそれを優先）
+    const dateText = getEventDate(event);
+    if (dateText) {
+      const dateEl = document.createElement("p");
+      dateEl.className = "card-date";
+      dateEl.innerHTML =
+        '<span class="cal" aria-hidden="true">' + calendarIcon() + "</span>" +
+        '<span class="date-txt">' + escapeHtml(dateText) + "</span>";
+      body.appendChild(dateEl);
+    }
+
     // 下部メタ行：左＝エリア（住所）／右＝アクションアイコン列
     const meta = document.createElement("div");
     meta.className = "card-meta";
@@ -388,7 +420,6 @@
     // --- カード全体のクリック/キーボード操作で「独立した詳細ページ」へ遷移 ---
     // URL例: event.html?id=evt2026001 （末尾がイベントIDになります）
     const detailUrl = getDetailUrl(event.id);
-    card.dataset.href = detailUrl;
     card.addEventListener("click", (e) => {
       // Ctrl/⌘+クリックや中クリックは「新しいタブで開く」を尊重
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) {
@@ -473,6 +504,11 @@
     return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:-2px">' +
       '<path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 12 8 12s8-6.6 8-12c0-4.4-3.6-8-8-8z" fill="currentColor"/>' +
       '<circle cx="12" cy="10" r="3" fill="#fff"/></svg>';
+  }
+  function calendarIcon() {
+    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="vertical-align:-2px">' +
+      '<rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/>' +
+      '<path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
   }
   function externalIcon(strokeColor) {
     const c = strokeColor || "currentColor";

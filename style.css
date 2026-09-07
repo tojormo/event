@@ -432,6 +432,17 @@ footer{background:var(--footer-bg);color:rgba(255,255,255,.55);padding:64px 0 32
 }
 
 /* =========================================================
+   一覧カードの開催日表示（.card-date）
+   ========================================================= */
+.card-date{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:.78rem;font-weight:600;color:var(--ink-soft);
+  margin:0 0 12px;line-height:1.5;
+}
+.card-date .cal{flex:0 0 auto;width:13px;height:13px;color:var(--green);}
+.card-date .date-txt{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+/* =========================================================
    個別イベント詳細ページ（event.html）
    ・一覧のカード（.event-card）をクリックすると、この独立ページへ遷移
    ・URL例: event.html?id=evt2026001
@@ -474,13 +485,32 @@ footer{background:var(--footer-bg);color:rgba(255,255,255,.55);padding:64px 0 32
 }
 .detail-title{
   font-size:clamp(1.5rem,3.4vw,2.1rem);font-weight:700;
-  color:var(--ink);line-height:1.5;letter-spacing:-.01em;margin-bottom:16px;
+  color:var(--ink);line-height:1.5;letter-spacing:-.01em;margin-bottom:22px;
 }
-.detail-address{
-  display:flex;align-items:flex-start;gap:6px;
-  font-size:.9rem;color:var(--ink-soft);margin-bottom:28px;
+
+/* 主要情報（開催日・会場・主催団体）を表形式で整理 */
+.detail-facts{
+  display:flex;flex-direction:column;gap:2px;
+  margin:0 0 28px;padding:18px 20px;
+  background:var(--gray);border-radius:var(--radius-img);
 }
-.detail-address .pin{flex:0 0 auto;width:14px;height:14px;margin-top:4px;color:var(--green);}
+.detail-facts .fact-row{
+  display:grid;grid-template-columns:132px 1fr;gap:14px;
+  padding:9px 0;align-items:start;
+}
+.detail-facts .fact-row + .fact-row{border-top:1px solid var(--line);}
+.detail-facts dt{
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:.82rem;font-weight:700;color:var(--ink-soft);
+}
+.detail-facts dt svg{flex:0 0 auto;color:var(--green);}
+.detail-facts dd{
+  font-size:.9rem;font-weight:600;color:var(--ink);line-height:1.7;
+}
+@media(max-width:520px){
+  .detail-facts .fact-row{grid-template-columns:1fr;gap:4px;}
+  .detail-facts .fact-row + .fact-row{padding-top:12px;}
+}
 
 /* detail(HTML) の中身のトーン（モーダルと共通の見た目に統一） */
 .detail-body{color:var(--ink-soft);font-size:.95rem;line-height:2;margin-bottom:32px;}

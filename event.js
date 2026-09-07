@@ -5,6 +5,7 @@
    ・URL末尾の ?id=xxxx（または #xxxx）からイベントIDを取得し、
      events.json から該当イベントを1件だけ探して表示します
        例) event.html?id=evt2026001
+   ・主要情報（開催日・会場・主催団体）を dl で整理して表示します
    ・events.json の "detail" 列はHTMLとしてそのまま描画します
      （index.html のモーダルと同じ挙動。信頼できるHTMLのみ入力）
    ・お気に入り（localStorage）は一覧ページと共有します
@@ -27,7 +28,16 @@
     thumb: document.getElementById("detailThumb"),
     category: document.getElementById("detailCategory"),
     title: document.getElementById("detailTitle"),
-    address: document.getElementById("detailAddress"),
+    // 主要情報（開催日・会場・主催団体）
+    factDate: document.getElementById("factDate"),
+    factDateLabel: document.getElementById("factDateLabel"),
+    factDateValue: document.getElementById("factDateValue"),
+    factAddress: document.getElementById("factAddress"),
+    factAddressLabel: document.getElementById("factAddressLabel"),
+    factAddressValue: document.getElementById("factAddressValue"),
+    factOrganizer: document.getElementById("factOrganizer"),
+    factOrganizerLabel: document.getElementById("factOrganizerLabel"),
+    factOrganizerValue: document.getElementById("factOrganizerValue"),
     body: document.getElementById("detailBody"),
     link: document.getElementById("detailLink"),
     fav: document.getElementById("detailFav"),
@@ -63,6 +73,22 @@
     try { localStorage.setItem(FAVORITES_STORAGE_KEY, JSON.stringify(Array.from(favorites))); } catch (e) {}
   }
 
+  // ---- 開催日を取り出す（main.js と同じロジック） ----
+  // 1) "date" 列があれば最優先 → 2) 無ければ detail の「開催日：〇〇<br>」から抽出
+  function getEventDate(event) {
+    if (event.date && String(event.date).trim()) return String(event.date).trim();
+    if (event.detail) {
+      var m = String(event.detail).match(/開催日[：:]([\s\S]*?)<br/i);
+      if (m && m[1]) {
+        var tmp = document.createElement("div");
+        tmp.innerHTML = m[1];
+        var txt = (tmp.textContent || "").replace(/\s+/g, " ").trim();
+        if (txt) return txt;
+      }
+    }
+    return "";
+  }
+
   var autoColorCache = {};
   function getCategoryColor(category) {
     if (cfg.categoryColorMap && cfg.categoryColorMap[category]) return cfg.categoryColorMap[category];
@@ -93,11 +119,6 @@
       appendPlaceholder();
     }
   }
-  function pinIcon() {
-    return '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="vertical-align:-2px">' +
-      '<path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 12 8 12s8-6.6 8-12c0-4.4-3.6-8-8-8z" fill="currentColor"/>' +
-      '<circle cx="12" cy="10" r="3" fill="#fff"/></svg>';
-  }
   function externalIcon(c) {
     c = c || "currentColor";
     return '<svg viewBox="0 0 24 24" width="15" height="15" fill="none">' +
@@ -120,6 +141,10 @@
       els.searchInput.placeholder = cfg.searchPlaceholder;
       els.searchInput.setAttribute("aria-label", cfg.searchPlaceholder);
     }
+    if (els.factDateLabel && cfg.eventDateLabel) els.factDateLabel.textContent = cfg.eventDateLabel;
+    if (els.factAddressLabel && cfg.eventAddressLabel) els.factAddressLabel.textContent = cfg.eventAddressLabel;
+    if (els.factOrganizerLabel && cfg.organizerLabel) els.factOrganizerLabel.textContent = cfg.organizerLabel;
+    if (els.backLabel && cfg.backToListLabel) els.backLabel.textContent = cfg.backToListLabel;
   }
 
   // 検索ボックスから入力したら、一覧ページへ q 付きで遷移
@@ -142,9 +167,18 @@
     var params = new URLSearchParams(location.search);
     var id = params.get("id");
     if (id) return id.trim();
-    // フォールバック：#evt2026001 形式にも対応
     if (location.hash) return decodeURIComponent(location.hash.replace(/^#/, "")).trim();
     return "";
+  }
+
+  // ---------- 主要情報の1行を表示 ----------
+  function setFact(rowEl, valueEl, value) {
+    if (value && String(value).trim()) {
+      rowEl.hidden = false;
+      valueEl.textContent = value;
+    } else {
+      rowEl.hidden = true;
+    }
   }
 
   // ---------- 描画 ----------
@@ -170,14 +204,10 @@
     // タイトル
     els.title.textContent = event.title || "(タイトル未設定)";
 
-    // 住所
-    if (event.address) {
-      els.address.hidden = false;
-      els.address.innerHTML = '<span class="pin" aria-hidden="true">' + pinIcon() + '</span><span>' +
-        escapeHtml(event.address) + '</span>';
-    } else {
-      els.address.hidden = true;
-    }
+    // 主要情報：開催日・会場・主催団体
+    setFact(els.factDate, els.factDateValue, getEventDate(event));
+    setFact(els.factAddress, els.factAddressValue, event.address);
+    setFact(els.factOrganizer, els.factOrganizerValue, event.organizer);
 
     // 本文（detail は HTML として描画）
     els.body.innerHTML = (event.detail && String(event.detail).trim())
@@ -277,10 +307,8 @@
 
   // ---------- 初期化 ----------
   applyTextConfig();
-  if (els.backLabel && cfg.backToListLabel) els.backLabel.textContent = cfg.backToListLabel;
   loadEvent();
 
-  // ヘッダーのスクロール制御（一覧ページと共通挙動）
   var hdr = document.getElementById("hdr");
   if (hdr) window.addEventListener("scroll", function () { hdr.classList.toggle("scrolled", window.scrollY > 20); });
 })();

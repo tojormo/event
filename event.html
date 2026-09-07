@@ -66,7 +66,40 @@
         <div class="detail-content">
           <span class="detail-category" id="detailCategory"></span>
           <h1 class="detail-title" id="detailTitle"></h1>
-          <p class="detail-address" id="detailAddress"></p>
+
+          <!-- 主要情報（開催日・会場・主催団体） -->
+          <dl class="detail-facts" id="detailFacts">
+            <div class="fact-row" id="factDate" hidden>
+              <dt>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="16" rx="2" stroke="currentColor" stroke-width="2"/>
+                  <path d="M3 9h18M8 3v4M16 3v4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span id="factDateLabel">開催日</span>
+              </dt>
+              <dd id="factDateValue"></dd>
+            </div>
+            <div class="fact-row" id="factAddress" hidden>
+              <dt>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M12 2C7.6 2 4 5.6 4 10c0 5.4 7 12 8 12s8-6.6 8-12c0-4.4-3.6-8-8-8z" fill="currentColor"/>
+                  <circle cx="12" cy="10" r="3" fill="#fff"/>
+                </svg>
+                <span id="factAddressLabel">会場</span>
+              </dt>
+              <dd id="factAddressValue"></dd>
+            </div>
+            <div class="fact-row" id="factOrganizer" hidden>
+              <dt>
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                  <path d="M4 20a6 6 0 0116 0" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                  <circle cx="12" cy="8" r="4" stroke="currentColor" stroke-width="2"/>
+                </svg>
+                <span id="factOrganizerLabel">主催団体</span>
+              </dt>
+              <dd id="factOrganizerValue"></dd>
+            </div>
+          </dl>
 
           <div class="detail-body" id="detailBody"></div>
 
